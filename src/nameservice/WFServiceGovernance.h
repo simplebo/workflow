@@ -107,9 +107,11 @@ class WFServiceGovernance : public WFDNSResolver
 public:
 	virtual WFRouterTask *create_router_task(const struct WFNSParams *params,
 											 router_callback_t callback);
-	virtual void success(RouteManager::RouteResult *result, void *cookie,
+	virtual void success(RouteManager::RouteResult *result,
+						 WFNSTracing *tracing,
 					 	 CommTarget *target);
-	virtual void failed(RouteManager::RouteResult *result, void *cookie,
+	virtual void failed(RouteManager::RouteResult *result,
+						WFNSTracing *tracing,
 						CommTarget *target);
 
 	virtual void add_server(const std::string& address,
@@ -143,7 +145,8 @@ public:
 	}
 
 private:
-	virtual bool select(const ParsedURI& uri, EndpointAddress **addr);
+	virtual bool select(const ParsedURI& uri, WFNSTracing *tracing,
+						EndpointAddress **addr);
 
 	virtual void recover_one_server(const EndpointAddress *addr)
 	{
@@ -169,6 +172,7 @@ protected:
 	virtual const EndpointAddress *first_strategy(const ParsedURI& uri);
 	virtual const EndpointAddress *another_strategy(const ParsedURI& uri);
 	void check_breaker();
+	static void tracing_deleter(void *data);
 
 	std::vector<EndpointAddress *> servers; // current servers
 	std::vector<EndpointAddress *> addresses; // memory management
