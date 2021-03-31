@@ -79,6 +79,7 @@ struct RouteParams
 	int connect_timeout;
 	int response_timeout;
 	size_t max_connections;
+	const std::string& hostname;
 };
 
 class RouteResultEntry
@@ -347,7 +348,9 @@ static inline bool __addr_less(const struct addrinfo *x, const struct addrinfo *
 
 static uint64_t __generate_key(TransportType type,
 							   const struct addrinfo *addrinfo,
-							   const std::string& other_info)
+							   const std::string& other_info,
+							   const struct EndpointParams *endpoint_params,
+							   const std::string& hostname)
 {
 	std::string str = "TT";
 
@@ -391,6 +394,7 @@ int RouteManager::get(TransportType type,
 					  const struct addrinfo *addrinfo,
 					  const std::string& other_info,
 					  const struct EndpointParams *endpoint_params,
+					  const std::string& hostname,
 					  RouteResult& result)
 {
 	result.cookie = NULL;
@@ -401,7 +405,8 @@ int RouteManager::get(TransportType type,
 		return -1;
 	}
 
-	uint64_t md5_16 = __generate_key(type, addrinfo, other_info);
+	uint64_t md5_16 = __generate_key(type, addrinfo, other_info,
+									 endpoint_params, hostname);
 	rb_node **p = &cache_.rb_node;
 	rb_node *parent = NULL;
 	RouteResultEntry *entry;
@@ -431,7 +436,8 @@ int RouteManager::get(TransportType type,
 			.md5_16					=	md5_16,
 			.connect_timeout		=	endpoint_params->connect_timeout,
 			.response_timeout		=	endpoint_params->response_timeout,
-			.max_connections		=	endpoint_params->max_connections
+			.max_connections		=	endpoint_params->max_connections,
+			.hostname				=	hostname,
 		};
 
 		if (StringUtil::start_with(other_info, "?maxconn="))
