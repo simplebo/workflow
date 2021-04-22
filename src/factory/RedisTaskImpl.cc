@@ -161,7 +161,7 @@ bool ComplexRedisTask::init_success()
 	char *info = new char[info_len];
 
 	sprintf(info, "redis|pass:%s|db:%d", password_.c_str(), db_num_);
-	this->WFComplexClientTask::set_type(TT_TCP);
+	this->WFComplexClientTask::set_transport_type(TT_TCP);
 	this->WFComplexClientTask::set_info(info);
 
 	delete []info;

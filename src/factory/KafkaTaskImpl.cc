@@ -155,19 +155,13 @@ CommMessageIn *__ComplexKafkaTask::message_in()
 
 bool __ComplexKafkaTask::init_success()
 {
-	TransportType type = TT_TCP;
-	if (uri_.scheme && strcasecmp(uri_.scheme, "kafka") == 0)
-		type = TT_TCP;
-	//else if (uri_.scheme && strcasecmp(uri_.scheme, "kafkas") == 0)
-	//	type = TT_TCP_SSL;
-
 	if (this->get_req()->get_config()->get_sasl_mechanisms())
 	{
 		std::string info = this->get_req()->get_config()->get_sasl_info();
 		this->WFComplexClientTask::set_info(info);
 	}
 
-	this->WFComplexClientTask::set_type(type);
+	this->WFComplexClientTask::set_transport_type(TT_TCP);
 	return true;
 }
 
